@@ -1,4 +1,4 @@
-package com.infnet.pedidos.config;
+package com.infnet.produtos.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;

@@ -59,4 +59,10 @@ public class ProdutoService {
         historico.setOperacao(operacao);
         historicoProdutoRepository.save(historico);
     }
+    public void reduzirQuantidade(Long produtoId, int quantidade) {
+        Produto produto = produtoRepository.findById(produtoId).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() - quantidade);
+        produtoRepository.save(produto);
+    }
+
 }
