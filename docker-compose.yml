@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  eurekaserver:
+    build: ./eurekaserver
+    container_name: eurekaserver
+    ports:
+      - "8761:8761"
+    networks:
+      - eureka-network
+
+  apigateway:
+    build: ./gateway
+    container_name: apigateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eurekaserver
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka
+    networks:
+      - eureka-network
+
+  pedidos:
+    build: ./pedidos
+    container_name: pedidos
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eurekaserver
+      - db
+      - rabbitmq
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    networks:
+      - eureka-network
+
+  produtos:
+    build: ./produtos
+    container_name: produtos
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eurekaserver
+      - db
+      - rabbitmq
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    networks:
+      - eureka-network
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bebidaGelada
+    ports:
+      - "3306:3306"
+    networks:
+      - eureka-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - eureka-network
+
+networks:
+  eureka-network:
+    driver: bridge

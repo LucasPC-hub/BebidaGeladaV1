@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pedidos")
+@RequestMapping("/")
 public class PedidoController {
 
     @Autowired
@@ -22,8 +22,10 @@ public class PedidoController {
     @PostMapping
     public Pedido adicionarPedido(@RequestBody Pedido pedido) {
         Pedido novoPedido = pedidoService.salvarPedido(pedido);
-        String message = "Produto ID: " + pedido.getProdutoId() + ", Quantidade: " + pedido.getQuantidade();
-        messageProducer.sendMessage(message);
+        pedido.getProdutos().forEach(produtoPedido -> {
+            String message = "Produto ID: " + produtoPedido.getProdutoId() + ", Quantidade: " + produtoPedido.getQuantidade();
+            messageProducer.sendMessage(message);
+        });
         return novoPedido;
     }
 
